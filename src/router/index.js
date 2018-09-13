@@ -1,19 +1,20 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import asyncComponent from './AsyncComponent';
 
 // 动态加载
-const Home = asyncComponent(() => import('@/view/home'));
-const Login = asyncComponent(() => import('@/view/login'));
+const Home = asyncComponent(() => import(/* webpackChunkName: "home" */'@/view/home'));
+const Login = asyncComponent(() => import(/* webpackChunkName: "login" */'@/view/login'));
 
-const Main = () => (
-  <main>
+const RouterView = () => (
+  <Router>
     <Switch>
       <Route exact path="/" component={Home} />
       <Route path="/login" component={Login} />
     </Switch>
-  </main>
+  </Router>
 );
 
 
-export default Main;
+
+export default RouterView;

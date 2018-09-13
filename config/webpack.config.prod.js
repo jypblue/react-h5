@@ -10,8 +10,17 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
+
+const pxtorem = require('postcss-pxtorem');
+const svgSpriteDirs = [
+  require.resolve('antd-mobile').replace(/warn\.js$/, ''), // antd-mobile 内置svg
+  path.resolve(__dirname, '../src/asset/svg'),  // 业务代码本地私有 svg 存放目录
+];
+
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -215,6 +224,36 @@ module.exports = {
             ),
             // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
           },
+          {
+            test: /\.scss$/,
+            use: [
+              require.resolve('style-loader'),
+              require.resolve('css-loader'),
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  ident: 'postcss', // https://webpack.js.org/guides/migrating/#complex-options
+                  plugins: () => [
+                    autoprefixer({
+                      browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 8', 'iOS >= 8', 'Android >= 4'],
+                    }),
+                    pxtorem({ rootValue: 100, propWhiteList: [] }),
+                  ],
+                },
+              },
+              {
+                loader: require.resolve('sass-loader'),
+                options: {
+
+                },
+              },
+            ],
+          },
+          {
+            test: /.(svg)$/i,
+            loader: 'svg-sprite-loader',
+            include: svgSpriteDirs,
+          },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
           // This loader doesn't use a "test" so it will catch all modules
@@ -332,6 +371,7 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new LodashModuleReplacementPlugin(),
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

@@ -11,6 +11,11 @@ const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
+const pxtorem = require('postcss-pxtorem');
+const svgSpriteDirs = [
+  require.resolve('antd-mobile').replace(/warn\.js$/, ''), // antd-mobile 内置svg
+  path.resolve(__dirname, '../src/asset/svg'),  // 业务代码本地私有 svg 存放目录
+];
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -192,6 +197,36 @@ module.exports = {
                 },
               },
             ],
+          },
+          {
+            test: /\.scss$/,
+            use: [
+              require.resolve('style-loader'),
+              require.resolve('css-loader'),
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  ident: 'postcss', // https://webpack.js.org/guides/migrating/#complex-options
+                  plugins: () => [
+                    autoprefixer({
+                      browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 8', 'iOS >= 8', 'Android >= 4'],
+                    }),
+                    pxtorem({ rootValue: 100, propWhiteList: [] }),
+                  ],
+                },
+              },
+              {
+                loader: require.resolve('sass-loader'),
+                options: {
+
+                },
+              },
+            ],
+          },
+          {
+            test: /.(svg)$/i,
+            loader: 'svg-sprite-loader',
+            include: svgSpriteDirs,
           },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
