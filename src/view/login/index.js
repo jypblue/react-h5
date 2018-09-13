@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import RouterView from '@/router';
 
-class App extends Component {
+class Login extends Component {
   render() {
     return (
       <div className="App">
-        <RouterView />
+        login
       </div>
     );
   }
 }
 
-export default App;
+export default Login;
