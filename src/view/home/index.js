@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import {
   selectSubreddit,
   fetchPostsIfNeeded,
@@ -12,17 +13,19 @@ import Posts from './Posts';
 class Home extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
+    console.log('ct props', props);
     this.handleChange = this.handleChange.bind(this);
     this.handleRefreshClick = this.handleRefreshClick.bind(this);
   }
 
   componentDidMount() {
     const { dispatch, selectedSubreddit } = this.props;
+    console.log('cd props', this.props);
     dispatch(fetchPostsIfNeeded(selectedSubreddit));
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
+    console.log('next props', nextProps);
     if (nextProps.selectedSubreddit !== this.props.selectedSubreddit) {
       const { dispatch, selectedSubreddit } = nextProps;
       dispatch(fetchPostsIfNeeded(selectedSubreddit));
@@ -45,6 +48,9 @@ class Home extends Component {
     const { selectedSubreddit, posts, isFetching, lastUpdated } = this.props;
     return (
       <div>
+        <div onClick={() => { this.props.history.push('/login') }}>
+          click me
+        </div>
         <Picker value={selectedSubreddit}
           onChange={this.handleChange}
           options={['ask', 'share']}
@@ -106,4 +112,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Home);
+export default withRouter(connect(mapStateToProps)(Home));

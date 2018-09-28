@@ -11,10 +11,9 @@ import registerServiceWorker from './registerServiceWorker';
 import './style/base.scss';
 
 const store = configureStore();
-
 ReactDOM.render(
   <Provider store={store}>
-    <RouterView />
+    {RouterView()}
   </Provider>
   ,
   document.getElementById('root'));
